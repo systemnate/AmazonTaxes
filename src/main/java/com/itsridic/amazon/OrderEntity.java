@@ -62,10 +62,10 @@ public class OrderEntity {
 		return stateMapping;
 	}
 
-	public static TreeMap<String, TreeMap<String, Double>> taxByAuthority(ArrayList<OrderEntity> orders) {
-		TreeMap<String, TreeMap<String, Double>> taxAuthorities = new TreeMap<>();
-		TreeMap<String, Double> tempMap;
-
+	public static TreeMap<String, TreeMap<String, ArrayList<Double>>> taxByAuthority(ArrayList<OrderEntity> orders) {
+		TreeMap<String, TreeMap<String, ArrayList <Double>>> taxAuthorities = new TreeMap<>();
+		TreeMap<String, ArrayList<Double>> tempMap;
+		ArrayList<Double> taxes;
 		for (OrderEntity order : orders) {
 			if (!taxAuthorities.containsKey(order.shippedTo.state)) {
 				tempMap = new TreeMap<>();
@@ -74,8 +74,12 @@ public class OrderEntity {
 				for (TaxEntity tax : order.taxes) {
 					String authority = tax.jurisdictionLevel + " " + tax.jurisdictionName;
 					double taxAmount = tax.taxAmount;
+					double taxableAmount = tax.taxableAmount;
 					if (!authority.contains("NOT APPLICABLE")) {
-						tempMap.put(authority, taxAmount);
+						taxes = new ArrayList<>();
+						taxes.add(taxAmount);
+						taxes.add(taxableAmount);
+						tempMap.put(authority, taxes);
 					}
 				}
 				taxAuthorities.put(order.shippedTo.state, tempMap);
@@ -85,16 +89,23 @@ public class OrderEntity {
 				for (TaxEntity tax : order.taxes) {
 					String authority = tax.jurisdictionLevel + " " + tax.jurisdictionName;
 					if (tempMap.containsKey(authority)) {
-						double taxAmount = tempMap.get(authority) + tax.taxAmount;
+						double taxAmount = tempMap.get(authority).get(0) + tax.taxAmount;
+						double taxableAmount = tempMap.get(authority).get(1) + tax.taxableAmount;
 						if (!authority.contains("NOT APPLICABLE")) {
-							tempMap.put(authority, taxAmount);
+							taxes = new ArrayList<>();
+							taxes.add(taxAmount);
+							taxes.add(taxableAmount);
+							tempMap.put(authority, taxes);
 						}
 					} else {
 						double taxAmount = tax.taxAmount;
+						double taxableAmount = tax.taxableAmount;
 						if (!authority.contains("NOT APPLICABLE")) {
-							tempMap.put(authority, taxAmount);
+							taxes = new ArrayList<>();
+							taxes.add(taxAmount);
+							taxes.add(taxableAmount);
+							tempMap.put(authority, taxes);
 						}
-
 					}
 				}
 				taxAuthorities.put(order.shippedTo.state, tempMap);
@@ -180,21 +191,20 @@ public class OrderEntity {
 		System.out.println("TOTAL TAX COLLECTED FOR EACH STATE:");
 		System.out.println("***************************************");
 		for (Map.Entry<String, Double> entry : taxTotal.entrySet()) {
-			// System.out.println(entry.getKey() + "\t\t\t\t\t" +
-			// Precision.round(entry.getValue(), 2));
 			System.out.printf("%-5s %.2f\n", entry.getKey(), Precision.round(entry.getValue(), 2));
 		}
 		System.out.println("***************************************");
 		System.out.println("BREAKDOWN BY EACH STATE:");
 		System.out.println("***************************************");
-		TreeMap<String, TreeMap<String, Double>> taxAuthority = taxByAuthority(orders);
+		TreeMap<String, TreeMap<String, ArrayList<Double>>> taxAuthority = taxByAuthority(orders);
 
-		for (Map.Entry<String, TreeMap<String, Double>> stateTax : taxAuthority.entrySet()) {
+		for (Map.Entry<String, TreeMap<String, ArrayList<Double>>> stateTax : taxAuthority.entrySet()) {
 			System.out.println(stateTax.getKey());
-			for (Map.Entry<String, Double> detail : stateTax.getValue().entrySet()) {
-				System.out.printf("%-55s %.2f\n", detail.getKey(), detail.getValue());
-				// System.out.println(detail.getKey() + "\t" +
-				// detail.getValue());
+			for (Map.Entry<String, ArrayList<Double>> detail : stateTax.getValue().entrySet()) {
+				//System.out.printf("%-55s %.2f\n", detail.getKey(), detail.getValue());
+				//System.out.printf("%-55s %.2f", detail.getKey()
+				System.out.printf("%-55s %.2f\t%.2f\n", detail.getKey(), detail.getValue().get(0), detail.getValue().get(1));
+				//System.out.println(detail.getKey() + "\t" + detail.getValue().get(0) + "\t" + detail.getValue().get(1));
 			}
 			System.out.println("------------------------------------------------------------------------------");
 		}
