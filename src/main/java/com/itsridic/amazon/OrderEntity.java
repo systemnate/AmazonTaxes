@@ -201,10 +201,7 @@ public class OrderEntity {
 		for (Map.Entry<String, TreeMap<String, ArrayList<Double>>> stateTax : taxAuthority.entrySet()) {
 			System.out.println(stateTax.getKey());
 			for (Map.Entry<String, ArrayList<Double>> detail : stateTax.getValue().entrySet()) {
-				//System.out.printf("%-55s %.2f\n", detail.getKey(), detail.getValue());
-				//System.out.printf("%-55s %.2f", detail.getKey()
 				System.out.printf("%-55s %.2f\t%.2f\n", detail.getKey(), detail.getValue().get(0), detail.getValue().get(1));
-				//System.out.println(detail.getKey() + "\t" + detail.getValue().get(0) + "\t" + detail.getValue().get(1));
 			}
 			System.out.println("------------------------------------------------------------------------------");
 		}
