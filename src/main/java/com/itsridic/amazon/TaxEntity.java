@@ -1,14 +1,14 @@
 package com.itsridic.amazon;
 
 public class TaxEntity {
-	private String jurisdictionLevel;
-	private String jurisdictionName;
-	private double taxAmount;
-	private double taxedJurisdictionTaxRate;
-	private String taxType;
-	private String taxCalculationReasonCode;
-	private double taxableAmount;
-	private double nonTaxableAmount;
+	protected String jurisdictionLevel;
+	protected String jurisdictionName;
+	protected double taxAmount;
+	protected double taxedJurisdictionTaxRate;
+	protected String taxType;
+	protected String taxCalculationReasonCode;
+	protected double taxableAmount;
+	protected double nonTaxableAmount;
 	
 	public TaxEntity(String jurisdictionLevel, String jurisdictionName, String taxAmount,
 			String taxedJurisdictionTaxRate, String taxType, String taxCalculationReasonCode, String taxableAmount,
